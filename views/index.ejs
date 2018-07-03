@@ -10,6 +10,18 @@
                 font-weight: 500;
                 font-family : 'Roboto', sans-serif;
             }
+            .el-collapse-item__header {
+                height: 48px;
+                line-height: 48px;
+                color:   #216bff;
+                cursor: pointer;
+                border-bottom: 1px solid #ebeef5;
+                font-size: 13px;
+                font-weight: 500;
+                -webkit-transition: border-bottom-color .3s;
+                transition: border-bottom-color .3s;
+                outline: 0;
+             }
         </style>
     </head>
     <body>
@@ -38,7 +50,8 @@
                         </el-slider>
                     </el-col>
                     <el-col :span="5">
-                        <el-button type="primary" @click="hashAction" size="small" :loading="success">Hash & Create</el-button>  
+                        <el-button type="primary" @click="beforeHash" size="small" :loading="loading">Hash & Create</el-button>  
+                        <el-button type="primary" @click="reset" size="small" >Reset all</el-button>  
                     </el-col>         
                 </el-row>
                 <el-row :gutter="20">
@@ -49,6 +62,21 @@
                         SHA256 : {{hash}}
                     </el-col>
                 </el-row>
+                </p>
+                <el-row :gutter="20">
+                        <el-col :span="12">    
+                                <el-collapse v-model="activeName" accordion v-for="b in block">
+                                        <el-collapse-item name="1">
+                                            <template slot="title">
+                                                <i class="header-icon el-icon-menu"></i> Block {{b.hash}}
+                                            </template>
+                                          <div>Seed : {{b.index}}</div>
+                                          <div>Prev hash : {{b.prev_hash}}</div>
+                                          <div>Data : {{b.data}}</div>
+                                        </el-collapse-item>
+                                </el-collapse>
+                        </el-col>
+                    </el-row>
             </el-main>
     </el-container>
 </div>  
@@ -69,10 +97,11 @@
               timestamp : "",
               hash : "",
               textarea2 : "",
-              difficult : "",
+              difficult : 0,
               data : "",
               success : false,
-              block : []
+              block : [],
+              loading : false
           }
         },
         created(){},
@@ -80,6 +109,13 @@
             handleChange(val){
                 alert("HELLO WORLD")
                 console.log(val)
+            },
+            beforeHash : function(){
+                this.loading = true
+                var self = this;
+                setTimeout(()=>{
+                    self.hashAction()
+                }, 300)
             },
             hashAction : function(){
                 this.hash = ""
@@ -95,12 +131,13 @@
                 }
                 Block.prototype.create = function(hash, prev_hash){
                     self.block.push({
-                        index : 1,
+                        index : this.i,
                         difficult : this.difficult,
                         data : this.data,
                         hash : hash,
                         prev_hash : prev_hash
                     })
+                    console.log(self.block)
                 }
                 while(this.hash.substring(0, this.difficult) !== Array(this.difficult + 1).join("0")){
                     this.nosense++
@@ -114,6 +151,7 @@
                     var length = this.block.length
                     Data.create(this.hash, this.block[length - 1].hash)
                 }
+                this.loading = false;
             },
             handleChange : function(){},
             reset : function(){
