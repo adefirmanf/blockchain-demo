@@ -1,0 +1,129 @@
+<html lang="en"><head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Document</title>
+        <link rel="stylesheet" href="https://unpkg.com/element-ui@2.4.3/lib/theme-chalk/index.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+        <style>
+            *{
+                font-weight: 500;
+                font-family : 'Roboto', sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <el-container>
+            <el-header>
+                <h3>Blockchain Demo<br><small>SHA256 using Stanford JavaScript Encryption Library</small></h3>
+            </el-header>
+            <el-main>
+                <el-row :gutter="20">
+                    <el-col :span="4">
+                    </el-col>
+                    <el-col :span="5">
+                            <el-input
+                            type="textarea"
+                            autosize
+                            placeholder="Data"
+                            v-model="data">
+                        </el-input>
+                            <el-slider
+                            v-model="difficult"
+                            :step="1"
+                            :min="1"
+                            :max="5"
+                            show-stops>  
+                        </el-slider>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-button type="primary" @click="hashAction" size="small" :loading="success">Hash & Create</el-button>  
+                    </el-col>         
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="12">    
+                        Difficult : {{difficult}}</br>
+                        Data : {{data}}</br>
+                        ID : {{nosense}}</br>
+                        SHA256 : {{hash}}
+                    </el-col>
+                </el-row>
+            </el-main>
+    </el-container>
+</div>  
+</body>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="//unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+    <script src="http://bitwiseshiftleft.github.io/sjcl/sjcl.js"></script>
+    <script>
+      ELEMENT.locale(ELEMENT.lang.en)
+      new Vue({
+        el: '#app',
+        data: function() {
+          return {
+              activeNames : ['1'],
+              nosense : 0,
+              timestamp : "",
+              hash : "",
+              textarea2 : "",
+              difficult : "",
+              data : "",
+              success : false,
+              block : []
+          }
+        },
+        created(){},
+        methods : {
+            handleChange(val){
+                alert("HELLO WORLD")
+                console.log(val)
+            },
+            hashAction : function(){
+                this.hash = ""
+                var self = this;
+                function Block(i, difficult, data){
+                    this.i = i
+                    this.difficult = difficult
+                    this.data = data
+                }
+                Block.prototype.validate = function(){
+                    var bin = sjcl.hash.sha256.hash(this.i, this.data)
+                    return sjcl.codec.hex.fromBits(bin)
+                }
+                Block.prototype.create = function(hash, prev_hash){
+                    self.block.push({
+                        index : 1,
+                        difficult : this.difficult,
+                        data : this.data,
+                        hash : hash,
+                        prev_hash : prev_hash
+                    })
+                }
+                while(this.hash.substring(0, this.difficult) !== Array(this.difficult + 1).join("0")){
+                    this.nosense++
+                    var Data = new Block(this.nosense, this.difficult, this.data)
+                    this.hash = Data.validate()
+                }
+                if(this.block.length < 1){
+                    Data.create(this.hash, "0000000000000000000000")
+                }
+                else{
+                    var length = this.block.length
+                    Data.create(this.hash, this.block[length - 1].hash)
+                }
+            },
+            handleChange : function(){},
+            reset : function(){
+                this.data = ""
+                this.difficult = 0
+                this.nosense = 0
+                this.hash = ""
+                this.block = []
+            }
+        }
+      })
+    </script>
+</html>
