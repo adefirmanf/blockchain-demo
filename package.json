@@ -1,0 +1,29 @@
+{
+  "name": "blockchain-demo",
+  "version": "1.0.1",
+  "description": "Blockchain Demo",
+  "main": "index.js",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adefirmanf/blockchain-demo.git"
+  },
+  "keywords": [
+    "blockchain",
+    "javascript",
+    "vue"
+  ],
+  "author": "Ade Firman F",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adefirmanf/blockchain-demo/issues"
+  },
+  "homepage": "https://github.com/adefirmanf/blockchain-demo#readme"
+}
